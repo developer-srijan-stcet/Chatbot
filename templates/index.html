@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chanakya – Your AI Learning Mentor</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='download.ico') }}">
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-header">Chanakya – Your AI Learning Mentor</div>
+
+    <div id="chat-box">
+        <!-- Messages -->
+
+        <!-- Typing Indicator -->
+        <div id="typing-indicator" class="typing hidden">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input
+            id="user-input"
+            type="text"
+            placeholder="Type your message..."
+            autocomplete="off"
+        >
+        <button id="send-btn">Send</button>
+    </div>
+</div>
+
+<!-- MathJax -->
+<script>
+window.MathJax = {
+    tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$']]
+    }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+<!-- JS -->
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
