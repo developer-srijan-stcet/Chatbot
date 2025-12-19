@@ -2,65 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chanakya – The AI Mentor</title>
+    <title>Chanakya – Your AI Learning Mentor</title>
 
     <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-    <!-- CSS -->
+    <!-- Main CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="icon" href="{{ url_for('static', filename='download.ico') }}">
 </head>
 
 <body>
 
-<div class="chat-container">
+<div class="page-bg">
 
-    <!-- Header -->
-    <div class="chat-header">
-        <span class="title">Chanakya</span>
-        <span class="subtitle">The AI Mentor</span>
-    </div>
+    <div class="chat-container">
 
-    <!-- Chat Box -->
-    <div id="chat-box">
+        <!-- ===== HEADER ===== -->
+        <div class="chat-header">
+            <div class="brand">
+                <span class="title">Chanakya</span>
+                <span class="subtitle">THE AI MENTOR</span>
+            </div>
+        </div>
 
-        <!-- Typing Indicator (stays at bottom) -->
-        <div id="typing-indicator" class="typing hidden">
-            <span></span>
-            <span></span>
-            <span></span>
+        <!-- ===== CHAT AREA ===== -->
+        <div class="chat-box" id="chat-box">
+            <!-- Messages will appear here -->
+        </div>
+
+        <!-- ===== INPUT ===== -->
+        <div class="chat-input">
+            <input type="text" placeholder="Ask Chanakya for wisdom..." />
+            <button>Send</button>
         </div>
 
     </div>
 
-    <!-- Input Area -->
-    <div class="input-area">
-        <input
-            id="user-input"
-            type="text"
-            placeholder="Ask Chanakya for wisdom..."
-            autocomplete="off"
-        >
-        <button id="send-btn">Send</button>
-    </div>
-
 </div>
-
-<!-- MathJax -->
-<script>
-window.MathJax = {
-    tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$']]
-    },
-    svg: { fontCache: 'global' }
-};
-</script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-
-<!-- JS -->
-<script src="{{ url_for('static', filename='script.js') }}"></script>
 
 </body>
 </html>
