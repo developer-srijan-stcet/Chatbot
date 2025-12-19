@@ -3,13 +3,11 @@ const input = document.getElementById("user-input");
 const sendBtn = document.getElementById("send-btn");
 const typing = document.getElementById("typing-indicator");
 
-/* Events */
 sendBtn.addEventListener("click", sendMessage);
 input.addEventListener("keydown", e => {
     if (e.key === "Enter") sendMessage();
 });
 
-/* Send Message */
 function sendMessage() {
     const message = input.value.trim();
     if (!message) return;
@@ -27,7 +25,7 @@ function sendMessage() {
     .then(data => {
         hideTyping();
         addMessage(data.reply, "bot");
-        MathJax.typeset();
+        if (window.MathJax) MathJax.typeset();
     })
     .catch(() => {
         hideTyping();
@@ -35,7 +33,6 @@ function sendMessage() {
     });
 }
 
-/* Add Message */
 function addMessage(text, type) {
     const msg = document.createElement("div");
     msg.className = type;
@@ -45,7 +42,6 @@ function addMessage(text, type) {
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-/* Typing Indicator */
 function showTyping() {
     typing.classList.remove("hidden");
     chatBox.scrollTop = chatBox.scrollHeight;
