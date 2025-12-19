@@ -2,40 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chanakya – Your AI Learning Mentor</title>
+    <title>Chanakya – The AI Mentor</title>
 
     <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
 
     <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='download.ico') }}">
 </head>
+
 <body>
 
 <div class="chat-container">
-    <div class="chat-header">Chanakya – Your AI Learning Mentor</div>
 
+    <!-- Header -->
+    <div class="chat-header">
+        <span class="title">Chanakya</span>
+        <span class="subtitle">The AI Mentor</span>
+    </div>
+
+    <!-- Chat Box -->
     <div id="chat-box">
-        <!-- Messages -->
 
-        <!-- Typing Indicator -->
+        <!-- Typing Indicator (stays at bottom) -->
         <div id="typing-indicator" class="typing hidden">
             <span></span>
             <span></span>
             <span></span>
         </div>
+
     </div>
 
+    <!-- Input Area -->
     <div class="input-area">
         <input
             id="user-input"
             type="text"
-            placeholder="Type your message..."
+            placeholder="Ask Chanakya for wisdom..."
             autocomplete="off"
         >
         <button id="send-btn">Send</button>
     </div>
+
 </div>
 
 <!-- MathJax -->
@@ -44,7 +53,8 @@ window.MathJax = {
     tex: {
         inlineMath: [['$', '$'], ['\\(', '\\)']],
         displayMath: [['$$', '$$']]
-    }
+    },
+    svg: { fontCache: 'global' }
 };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
