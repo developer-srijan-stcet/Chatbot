@@ -10,11 +10,24 @@ function sendMessage() {
 
     showTyping();
 
-    setTimeout(() => {
+    // Call the Flask API
+    fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+    })
+    .then(res => res.json())
+    .then(data => {
         removeTyping();
-        addMessage("This is a premium demo reply ✨", "bot");
-    }, 1200);
+        addMessage(data.reply, "bot");
+    })
+    .catch(err => {
+        removeTyping();
+        addMessage("Oops! Something went wrong.", "bot");
+        console.error(err);
+    });
 }
+
 
 function addMessage(text, type) {
     const msg = document.createElement("div");
