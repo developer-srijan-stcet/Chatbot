@@ -3,6 +3,7 @@ const input = document.getElementById("user-input");
 const sendBtn = document.getElementById("send-btn");
 const historyBtn = document.getElementById("history-btn");
 const historyList = document.getElementById("history-list");
+const historySidebar = document.getElementById("history-sidebar");
 
 // ---------- Chat functions ----------
 function addMessage(text, type) {
@@ -72,4 +73,11 @@ input.addEventListener("keypress", e => {
     if (e.key === "Enter") sendMessage();
 });
 sendBtn.addEventListener("click", sendMessage);
-historyBtn.addEventListener("click", loadHistorySidebar);
+historyBtn.addEventListener("click", () => {
+    if (historySidebar.classList.contains("visible")) {
+        historySidebar.classList.remove("visible");
+    } else {
+        historySidebar.classList.add("visible");
+        loadHistorySidebar();
+    }
+});

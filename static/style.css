@@ -48,6 +48,7 @@ body::before {
 @keyframes ambientMove {
     50% { transform: translate(80px,-60px); }
 }
+
 .main-container {
     display: flex;
     gap: 20px;
@@ -58,12 +59,17 @@ body::before {
 }
 
 .history-sidebar {
-    width: 280px;
+    flex: 0 0 0;
     background: rgba(23,26,33,0.9);
     border-radius: 18px;
     padding: 16px;
-    overflow-y: auto;
+    overflow: hidden;
     color: var(--text);
+    transition: flex-basis 0.5s ease;
+}
+
+.history-sidebar.visible {
+    flex: 0 0 280px;
 }
 
 .history-sidebar h3 {
@@ -83,29 +89,22 @@ body::before {
    CHAT CONTAINER
 ========================= */
 .chat-container {
-    width: 85vw;
-    max-width: 1400px;
-    min-width: 520px;
+    flex: 1;
     height: 88vh;
-
     background: linear-gradient(
         180deg,
         rgba(23,26,33,0.95),
         rgba(16,19,26,0.9)
     );
-
     backdrop-filter: blur(26px) saturate(160%);
     border-radius: 26px;
     padding: 22px;
-
     display: flex;
     flex-direction: column;
     position: relative;
-
     box-shadow:
         0 40px 90px rgba(0,0,0,0.8),
         inset 0 0 0 1px rgba(255,255,255,0.04);
-
     animation: floatCard 10s ease-in-out infinite;
 }
 
