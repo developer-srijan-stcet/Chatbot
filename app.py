@@ -17,15 +17,12 @@ DB_URL = os.getenv("DATABASE_URL")
 def get_conn():
     return psycopg2.connect(DB_URL, cursor_factory=RealDictCursor)
 
-# ---------- Initialize DB (Run once) ----------
+# ---------- Initialize DB safely ----------
 def init_db():
     with get_conn() as conn:
         with conn.cursor() as cur:
-            # 🔥 FORCE FIX OLD TABLE
-            #cur.execute("DROP TABLE IF EXISTS messages;")
-
             cur.execute("""
-                CREATE TABLE messages (
+                CREATE TABLE IF NOT EXISTS messages (
                     id SERIAL PRIMARY KEY,
                     user_id TEXT NOT NULL,
                     content TEXT NOT NULL,
@@ -35,7 +32,10 @@ def init_db():
             """)
         conn.commit()
 
-init_db()
+# Run only once when first request comes in
+@app.before_first_request
+def setup_db():
+    init_db()
 
 # ---------- Routes ----------
 @app.route("/")
@@ -78,6 +78,29 @@ def chat():
     except Exception as e:
         print("Error in /chat:", e)
         return jsonify({"reply": "Oops! Something went wrong."})
+@app.route("/clear-history", methods=["POST"])
+def clear_history():
+    data = request.json
+    user_id = data.get("user_id")
+
+    if not user_id:
+        return jsonify({"status": "error"})
+
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "DELETE FROM messages WHERE user_id = %s",
+                    (user_id,)
+                )
+            conn.commit()
+
+        return jsonify({"status": "success"})
+
+    except Exception as e:
+        print("Error clearing history:", e)
+        return jsonify({"status": "error"})
+
 
 @app.route("/history", methods=["POST"])
 def history():
@@ -100,6 +123,5 @@ def history():
         return jsonify([])
 
 if __name__ == "__main__":
-    # Run on Render port if available
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)

@@ -18,17 +18,19 @@
 <div class="page-bg">
     <div class="main-container">
 
-        <!-- Sidebar for user chat history -->
+        <!-- Sidebar for chat history -->
         <aside class="history-sidebar" id="history-sidebar">
             <h3>Chat History</h3>
+            <button id="clear-history-btn" class="clear-btn danger">Clear History</button>
             <div id="history-list"></div>
         </aside>
 
         <!-- Main chat area -->
         <section class="chat-container">
             <header class="chat-header">
-                <span class="title">CHANAKYA</span>
+                <span class="title typing-title" id="typing-title"></span>
                 <span class="subtitle">THE AI MENTOR</span>
+                <button id="clear-chat-btn" class="clear-btn">Clear Chat</button>
             </header>
 
             <div id="chat-box">
@@ -45,7 +47,7 @@
     </div>
 </div>
 
-<!-- JavaScript -->
+<!-- Main JS -->
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
