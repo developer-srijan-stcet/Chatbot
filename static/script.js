@@ -6,6 +6,13 @@ const historyList = document.getElementById("history-list");
 const historySidebar = document.getElementById("history-sidebar");
 const mainContainer = document.querySelector(".main-container");
 
+// ---------- Generate persistent user_id ----------
+let userId = localStorage.getItem("user_id");
+if (!userId) {
+    userId = crypto.randomUUID();
+    localStorage.setItem("user_id", userId);
+}
+
 // ---------- Chat functions ----------
 function addMessage(text, type) {
     const msg = document.createElement("div");
@@ -29,7 +36,7 @@ function removeTyping() {
     if (t) t.remove();
 }
 
-function sendMessage() {
+async function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
 
@@ -37,36 +44,41 @@ function sendMessage() {
     input.value = "";
     showTyping();
 
-    fetch("/chat", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ message: text })
-    })
-    .then(res => res.json())
-    .then(data => {
+    try {
+        const res = await fetch("/chat", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ message: text, user_id: userId })
+        });
+        const data = await res.json();
         removeTyping();
         addMessage(data.reply, "bot");
-    })
-    .catch(err => {
+    } catch (err) {
         removeTyping();
         addMessage("Oops! Something went wrong.", "bot");
         console.error(err);
-    });
+    }
 }
 
 // ---------- Sidebar history ----------
-function loadHistorySidebar() {
-    fetch("/history")
-    .then(res => res.json())
-    .then(data => {
+async function loadHistorySidebar() {
+    try {
+        const res = await fetch("/history", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ user_id: userId })
+        });
+        const data = await res.json();
         historyList.innerHTML = "";
         data.forEach(msg => {
             const div = document.createElement("div");
-            div.className = "history-item"; // simple styling class
-            div.textContent = `🧑 ${msg.content}`; // Only user messages
+            div.className = "history-item";
+            div.textContent = `🧑 ${msg.content}`;
             historyList.appendChild(div);
         });
-    });
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 // ---------- Event listeners ----------
@@ -85,12 +97,29 @@ historyBtn.addEventListener("click", () => {
         loadHistorySidebar();
     }
 });
+
 // Custom Cursor
 const cursor = document.createElement('div');
 cursor.className = 'cursor';
 document.body.appendChild(cursor);
-
 document.addEventListener('mousemove', (e) => {
     cursor.style.left = `${e.clientX}px`;
     cursor.style.top = `${e.clientY}px`;
 });
+
+// ---------- Load chat history on page load ----------
+async function loadChatHistory() {
+    try {
+        const res = await fetch("/history", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ user_id: userId })
+        });
+        const data = await res.json();
+        data.forEach(msg => addMessage(msg.content, "bot"));
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+loadChatHistory();
