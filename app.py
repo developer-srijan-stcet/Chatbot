@@ -22,7 +22,7 @@ def init_db():
     with get_conn() as conn:
         with conn.cursor() as cur:
             # 🔥 FORCE FIX OLD TABLE
-            cur.execute("DROP TABLE IF EXISTS messages;")
+            #cur.execute("DROP TABLE IF EXISTS messages;")
 
             cur.execute("""
                 CREATE TABLE messages (

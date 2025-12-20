@@ -107,17 +107,27 @@ document.addEventListener('mousemove', (e) => {
 
 // ---------- Load chat history on page load ----------
 async function loadChatHistory() {
+    // 🔥 CLEAR chatbox before rendering history
+    chatBox.innerHTML = `
+        <div class="bot">
+            👋 Welcome. I am <strong>Chanakya</strong>. Ask me anything.
+        </div>
+    `;
+
     try {
         const res = await fetch("/history", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({ user_id: userId })
         });
+
         const data = await res.json();
         data.forEach(msg => addMessage(msg.content, msg.msg_type));
+
     } catch (err) {
         console.error(err);
     }
 }
+
 
 loadChatHistory();
