@@ -112,24 +112,17 @@ document.addEventListener("mousemove",(e)=>{
     cursor.style.left=`${e.clientX}px`; cursor.style.top=`${e.clientY}px`;
 });
 
-// ---------- Load chat history ----------
-async function loadChatHistory(){
-    chatBox.innerHTML = `<div class="bot">👋 Welcome. I am <strong>Chanakya</strong>. Ask me anything.</div>`;
-    try{
-        const res = await fetch("/history",{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body: JSON.stringify({user_id:userId})
-        });
-        const data = await res.json();
-        data.forEach(msg=>addMessage(msg.content, msg.msg_type));
-    }catch(err){console.error(err);}
-}
-
-loadChatHistory();
+// ---------- Initialize chat box ----------
+chatBox.innerHTML = `<div class="bot">👋 Welcome! I am <strong>Chanakya</strong>. Ask me anything.</div>`;
 
 // ---------- Typing title animation ----------
 const titleText="CHANAKYA"; const titleEl=document.getElementById("typing-title");
 let i=0;
-function typeTitle(){ if(i<titleText.length){ titleEl.textContent+=titleText.charAt(i); i++; setTimeout(typeTitle,150);} }
+function typeTitle(){ 
+    if(i<titleText.length){ 
+        titleEl.textContent+=titleText.charAt(i); 
+        i++; 
+        setTimeout(typeTitle,150);
+    } 
+}
 typeTitle();
