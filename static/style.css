@@ -10,6 +10,9 @@
     --bot: #4caf50;
     --text: #eaeaea;
     --input: rgba(28,32,48,0.85);
+    --particle-color: rgba(79,140,255,0.6);
+    --glow-primary: rgba(79,140,255,0.8);
+    --glow-secondary: rgba(76,175,80,0.8);
 }
 
 /* RESET */
@@ -20,7 +23,7 @@
 }
 
 /* =========================
-   BODY BACKGROUND
+   BODY BACKGROUND WITH PARTICLES
 ========================= */
 body {
     height: 100vh;
@@ -32,6 +35,7 @@ body {
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    cursor: none; /* Custom cursor for uniqueness */
 }
 
 body::before {
@@ -45,10 +49,51 @@ body::before {
     pointer-events: none;
 }
 
+/* Floating Particles for "Sexy" Ambiance */
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(circle, var(--particle-color) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: particleFloat 20s linear infinite;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
 @keyframes ambientMove {
     50% { transform: translate(80px,-60px); }
 }
 
+@keyframes particleFloat {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-100vh); }
+}
+
+/* Custom Cursor */
+.cursor {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    background: var(--glow-primary);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease;
+    box-shadow: 0 0 20px var(--glow-primary);
+}
+
+.cursor:hover {
+    transform: scale(1.5);
+}
+
+/* =========================
+   MAIN CONTAINER
+========================= */
 .main-container {
     display: flex;
     gap: 20px;
@@ -56,12 +101,15 @@ body::before {
     max-width: 1400px;
     min-width: 520px;
     height: 88vh;
-    position: relative; /* For absolute sidebar positioning */
+    position: relative;
 }
 
+/* =========================
+   HISTORY SIDEBAR
+========================= */
 .history-sidebar {
     position: absolute;
-    left: -280px; /* Off-screen initially */
+    left: -280px;
     top: 0;
     width: 280px;
     height: 100%;
@@ -70,9 +118,9 @@ body::before {
     padding: 16px;
     color: var(--text);
     opacity: 0;
-    transform: translateX(-20px); /* Slight offset for bounce */
-    transition: left 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.6s ease, transform 0.6s ease; /* Bouncy slide-in */
-    box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+    transform: translateX(-20px) rotateY(10deg); /* 3D tilt for depth */
+    transition: left 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.8s ease, transform 0.8s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 40px var(--glow-primary);
     backdrop-filter: blur(20px);
     z-index: 10;
 }
@@ -80,28 +128,34 @@ body::before {
 .history-sidebar.visible {
     left: 0;
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) rotateY(0deg);
 }
 
-/* Neon border for sidebar */
+/* Neon Border with Morphing Effect */
 .history-sidebar::before {
     content: "";
     position: absolute;
     inset: 0;
     padding: 2px;
     border-radius: 18px;
-    background: linear-gradient(120deg, #4f8cff, #4caf50, #ff4fd8, #4f8cff);
-    background-size: 300% 300%;
-    animation: neonFlow 6s linear infinite;
+    background: linear-gradient(45deg, #4f8cff, #4caf50, #ff4fd8, #4f8cff);
+    background-size: 400% 400%;
+    animation: neonFlow 4s linear infinite, morphBorder 8s ease-in-out infinite;
     mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     mask-composite: exclude;
     pointer-events: none;
+}
+
+@keyframes morphBorder {
+    0%, 100% { border-radius: 18px; }
+    50% { border-radius: 50px; }
 }
 
 .history-sidebar h3 {
     text-align: center;
     margin-bottom: 12px;
     font-weight: 700;
+    text-shadow: 0 0 20px var(--glow-primary);
 }
 
 #history-list div {
@@ -112,29 +166,29 @@ body::before {
     font-size: 14px;
     cursor: pointer;
     transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#history-list div::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
 }
 
 #history-list div:hover {
     background: rgba(76,175,80,0.3);
-    transform: translateX(6px);
-    box-shadow: 0 0 20px rgba(76,175,80,0.4); /* Attractive glow */
+    transform: translateX(8px) scale(1.02);
+    box-shadow: 0 0 30px var(--glow-secondary);
 }
 
-/* Overlay when sidebar is open */
-.main-container::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.3);
-    backdrop-filter: blur(2px);
-    opacity: 0;
-    transition: opacity 0.6s ease;
-    pointer-events: none;
-    z-index: 5;
-}
-
-.main-container.sidebar-open::after {
-    opacity: 1;
+#history-list div:hover::before {
+    left: 100%;
 }
 
 /* =========================
@@ -156,25 +210,31 @@ body::before {
     position: relative;
     box-shadow:
         0 40px 90px rgba(0,0,0,0.8),
-        inset 0 0 0 1px rgba(255,255,255,0.04);
-    animation: floatCard 10s ease-in-out infinite;
-    z-index: 1; /* Below sidebar */
+        inset 0 0 0 1px rgba(255,255,255,0.04),
+        0 0 60px var(--glow-primary);
+    animation: floatCard 10s ease-in-out infinite, pulseGlow 4s ease-in-out infinite;
+    z-index: 1;
 }
 
 @keyframes floatCard {
     50% { transform: translateY(-10px); }
 }
 
-/* NEON BORDER */
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 40px 90px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.04), 0 0 60px var(--glow-primary); }
+    50% { box-shadow: 0 40px 90px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.04), 0 0 100px var(--glow-primary); }
+}
+
+/* Morphing Neon Border */
 .chat-container::before {
     content: "";
     position: absolute;
     inset: 0;
     padding: 2px;
     border-radius: 26px;
-    background: linear-gradient(120deg,#4f8cff,#4caf50,#ff4fd8,#4f8cff);
+    background: linear-gradient(120deg, #4f8cff, #4caf50, #ff4fd8, #4f8cff);
     background-size: 300% 300%;
-    animation: neonFlow 6s linear infinite;
+    animation: neonFlow 6s linear infinite, morphBorder 10s ease-in-out infinite;
     mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     mask-composite: exclude;
     pointer-events: none;
@@ -197,15 +257,21 @@ body::before {
     font-size: 30px;
     font-weight: 800;
     letter-spacing: 2px;
-    background: linear-gradient(90deg,#4f8cff,#4caf50,#ff4fd8);
+    background: linear-gradient(90deg, #4f8cff, #4caf50, #ff4fd8);
     background-size: 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: titleShift 6s linear infinite;
+    animation: titleShift 6s linear infinite, textGlow 2s ease-in-out infinite;
+    text-shadow: 0 0 30px var(--glow-primary);
 }
 
 @keyframes titleShift {
     to { background-position: 300%; }
+}
+
+@keyframes textGlow {
+    0%, 100% { filter: drop-shadow(0 0 10px var(--glow-primary)); }
+    50% { filter: drop-shadow(0 0 20px var(--glow-primary)); }
 }
 
 .chat-header .subtitle {
@@ -260,12 +326,14 @@ body::before {
     line-height: 1.6;
     animation: popIn 0.45s cubic-bezier(.22,1,.36,1);
     backdrop-filter: blur(14px);
+    position: relative;
+    overflow: hidden;
 }
 
 @keyframes popIn {
     from {
         opacity: 0;
-        transform: translateY(24px) scale(0.95);
+        transform: translateY(24px) scale(0.95) rotateX(10deg);
         filter: blur(8px);
     }
 }
@@ -274,14 +342,21 @@ body::before {
     margin-left: auto;
     background: rgba(79,140,255,0.22);
     color: var(--user);
-    box-shadow: 0 0 30px rgba(79,140,255,0.25);
+    box-shadow: 0 0 30px rgba(79,140,255,0.25), 0 10px 20px rgba(0,0,0,0.2);
+    transform-style: preserve-3d;
 }
 
 .bot {
     margin-right: auto;
     background: rgba(76,175,80,0.22);
     color: var(--bot);
-    box-shadow: 0 0 30px rgba(76,175,80,0.25);
+    box-shadow: 0 0 30px rgba(76,175,80,0.25), 0 10px 20px rgba(0,0,0,0.2);
+    transform-style: preserve-3d;
+}
+
+.user:hover, .bot:hover {
+    transform: translateY(-5px) rotateX(-5deg);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
 }
 
 /* =========================
@@ -302,24 +377,27 @@ input {
     color: var(--text);
     font-size: 15px;
     outline: none;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 input:focus {
     box-shadow:
         0 0 0 2px rgba(79,140,255,0.5),
         0 0 30px rgba(79,140,255,0.6);
+    transform: scale(1.02);
 }
 
 button {
     padding: 16px 28px;
     border-radius: 50px;
     border: none;
-    background: linear-gradient(135deg,#4f8cff,#6fa3ff);
+    background: linear-gradient(135deg, #4f8cff, #6fa3ff);
     color: white;
     font-weight: 600;
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 button::after {
@@ -331,8 +409,35 @@ button::after {
     transition: 0.25s;
 }
 
+button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 30px var(--glow-primary);
+}
+
 button:hover::after { opacity: 1; }
-button:active { transform: scale(0.96); }
+
+button:active {
+    transform: scale(0.96);
+}
+
+/* Ripple Effect on Button Click */
+button::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255,255,255,0.6);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+button:active::before {
+    width: 300px;
+    height: 300px;
+}
 
 /* =========================
    MOBILE
@@ -345,10 +450,13 @@ button:active { transform: scale(0.96); }
         border-radius: 0;
     }
     .history-sidebar {
-        width: 250px; /* Slightly narrower on mobile */
+        width: 250px;
         left: -250px;
     }
     .history-sidebar.visible {
         left: 0;
+    }
+    .cursor {
+        display: none; /* Hide custom cursor on mobile for usability */
     }
 }
