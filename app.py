@@ -60,12 +60,12 @@ def chat():
                 )
             conn.commit()
 
-        # Generate AI reply
-        response = client.generate_text(
+        # --- FIXED AI CALL ---
+        resp = client.responses.create(
             model="gemini-2.5-flash",
-            prompt=user_msg
+            input=user_msg
         )
-        reply_text = response.text
+        reply_text = resp.output_text
 
         # Save AI reply
         with get_conn() as conn:
@@ -81,6 +81,7 @@ def chat():
     except Exception as e:
         print("Error in /chat:", e)
         return jsonify({"reply": "Oops! Something went wrong."})
+
 
 @app.route("/clear-history", methods=["POST"])
 def clear_history():
