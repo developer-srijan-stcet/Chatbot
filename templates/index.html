@@ -18,21 +18,21 @@
 <div class="page-bg">
     <div class="main-container">
 
-        <!-- Sidebar for user history -->
-        <div class="history-sidebar" id="history-sidebar">
+        <!-- Sidebar for user chat history -->
+        <aside class="history-sidebar" id="history-sidebar">
             <h3>Chat History</h3>
             <div id="history-list"></div>
-        </div>
+        </aside>
 
         <!-- Main chat area -->
-        <div class="chat-container">
-            <div class="chat-header">
+        <section class="chat-container">
+            <header class="chat-header">
                 <span class="title">CHANAKYA</span>
                 <span class="subtitle">THE AI MENTOR</span>
-            </div>
+            </header>
 
             <div id="chat-box">
-                <div class="bot">👋 Welcome. I am <strong>Chanakya</strong>. Ask me anything.</div>
+                <div class="bot">👋 Welcome! I am <strong>Chanakya</strong>. Ask me anything.</div>
             </div>
 
             <div class="input-area">
@@ -40,11 +40,12 @@
                 <button id="send-btn">Send</button>
                 <button id="history-btn">History</button>
             </div>
-        </div>
+        </section>
+
     </div>
 </div>
 
-<!-- JS -->
+<!-- JavaScript -->
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

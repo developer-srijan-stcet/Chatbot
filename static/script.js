@@ -16,7 +16,7 @@ if (!userId) {
 // ---------- Chat functions ----------
 function addMessage(text, type) {
     const msg = document.createElement("div");
-    msg.className = type; // 'user' or 'bot'
+    msg.className = type;
     msg.innerHTML = text.replace(/\n/g, "<br>");
     chatBox.appendChild(msg);
     chatBox.scrollTop = chatBox.scrollHeight;
