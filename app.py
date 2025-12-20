@@ -60,12 +60,13 @@ def chat():
                 )
             conn.commit()
 
-        # --- FIXED AI CALL ---
-        resp = client.responses.create(
+        # Generate AI reply using new google-genai syntax
+        response = client.responses.create(
             model="gemini-2.5-flash",
             input=user_msg
         )
-        reply_text = resp.output_text
+        # Get the text output
+        reply_text = response.output[0].content[0].text
 
         # Save AI reply
         with get_conn() as conn:
@@ -81,6 +82,7 @@ def chat():
     except Exception as e:
         print("Error in /chat:", e)
         return jsonify({"reply": "Oops! Something went wrong."})
+
 
 
 @app.route("/clear-history", methods=["POST"])
