@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-import google.generativeai as genai
+import google.genai as genai
 import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -8,8 +8,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
 
 # ---------- Gemini AI ----------
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-2.5-flash")
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 # ---------- Database ----------
 DB_URL = os.getenv("DATABASE_URL")
@@ -32,10 +31,8 @@ def init_db():
             """)
         conn.commit()
 
-# Run only once when first request comes in
-@app.before_first_request
-def setup_db():
-    init_db()
+# Initialize DB at app startup
+init_db()
 
 # ---------- Routes ----------
 @app.route("/")
@@ -62,7 +59,11 @@ def chat():
             conn.commit()
 
         # Generate AI reply
-        reply_text = model.generate_content(user_msg).text
+        response = client.generate_text(
+            model="gemini-2.5-flash",
+            prompt=user_msg
+        )
+        reply_text = response.text
 
         # Save AI reply
         with get_conn() as conn:
@@ -78,6 +79,7 @@ def chat():
     except Exception as e:
         print("Error in /chat:", e)
         return jsonify({"reply": "Oops! Something went wrong."})
+
 @app.route("/clear-history", methods=["POST"])
 def clear_history():
     data = request.json
@@ -100,7 +102,6 @@ def clear_history():
     except Exception as e:
         print("Error clearing history:", e)
         return jsonify({"status": "error"})
-
 
 @app.route("/history", methods=["POST"])
 def history():
