@@ -21,12 +21,15 @@ def get_conn():
 def init_db():
     with get_conn() as conn:
         with conn.cursor() as cur:
+            # 🔥 FORCE FIX OLD TABLE
+            cur.execute("DROP TABLE IF EXISTS messages;")
+
             cur.execute("""
-                CREATE TABLE IF NOT EXISTS messages (
+                CREATE TABLE messages (
                     id SERIAL PRIMARY KEY,
-                    user_id TEXT,
-                    content TEXT,
-                    msg_type TEXT DEFAULT 'user',
+                    user_id TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    msg_type TEXT NOT NULL,
                     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
             """)
