@@ -19,42 +19,34 @@
 <body>
 
 <div class="page-bg">
-    <div class="chat-container">
+    <div class="main-container">
 
-        <!-- ===== HEADER ===== -->
-        <div class="chat-header">
-            <span class="title">CHANAKYA</span>
-            <span class="subtitle">THE AI MENTOR</span>
+        <!-- Sidebar -->
+        <div class="history-sidebar" id="history-sidebar">
+            <h3>Chat History</h3>
+            <div id="history-list"></div>
         </div>
 
-        <!-- ===== CHAT AREA ===== -->
-        <div id="chat-box">
-
-            <!-- Initial welcome message (optional but premium) -->
-            <div class="bot">
-                👋 Welcome. I am <strong>Chanakya</strong>. Ask me anything.
+        <!-- Main chat -->
+        <div class="chat-container">
+            <div class="chat-header">
+                <span class="title">CHANAKYA</span>
+                <span class="subtitle">THE AI MENTOR</span>
             </div>
 
-            <!-- Typing indicator -->
-            <div id="typing-indicator" class="typing hidden">
-                <span></span><span></span><span></span>
+            <div id="chat-box">
+                <div class="bot">👋 Welcome. I am <strong>Chanakya</strong>. Ask me anything.</div>
             </div>
 
+            <div class="input-area">
+                <input type="text" id="user-input" placeholder="Ask Chanakya for wisdom…">
+                <button id="send-btn">Send</button>
+                <button id="history-btn">History</button>
+            </div>
         </div>
-
-        <!-- ===== INPUT ===== -->
-        <div class="input-area">
-            <input
-                type="text"
-                id="user-input"
-                placeholder="Ask Chanakya for wisdom…"
-                autocomplete="off"
-            />
-            <button id="send-btn">Send</button>
-        </div>
-
     </div>
 </div>
+
 
 <!-- Main JS -->
 <script src="{{ url_for('static', filename='script.js') }}"></script>

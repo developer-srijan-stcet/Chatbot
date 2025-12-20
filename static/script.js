@@ -1,5 +1,7 @@
 const chatBox = document.getElementById("chat-box");
 const input = document.getElementById("user-input");
+const historyBtn = document.getElementById("history-btn");
+const historyList = document.getElementById("history-list");
 
 function sendMessage() {
     const text = input.value.trim();
@@ -7,10 +9,8 @@ function sendMessage() {
 
     addMessage(text, "user");
     input.value = "";
-
     showTyping();
 
-    // Call the Flask API
     fetch("/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -28,21 +28,13 @@ function sendMessage() {
     });
 }
 
-
 function addMessage(text, type) {
     const msg = document.createElement("div");
     msg.className = type;
-
-    // Convert line breaks to <br> for proper formatting
-    const formattedText = text.replace(/\n/g, "<br>");
-
-    // Render HTML content (bold, italics) safely
-    msg.innerHTML = formattedText;
-
+    msg.innerHTML = text.replace(/\n/g, "<br>");
     chatBox.appendChild(msg);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
-
 
 function showTyping() {
     const typing = document.createElement("div");
@@ -58,6 +50,22 @@ function removeTyping() {
     if (t) t.remove();
 }
 
-input.addEventListener("keypress", e => {
-    if (e.key === "Enter") sendMessage();
-});
+input.addEventListener("keypress", e => { if (e.key === "Enter") sendMessage(); });
+document.getElementById("send-btn").addEventListener("click", sendMessage);
+
+// ------------------- HISTORY -------------------
+function loadHistorySidebar() {
+    fetch("/history")
+    .then(res => res.json())
+    .then(data => {
+        historyList.innerHTML = "";
+        data.forEach(msg => {
+            const msgDiv = document.createElement("div");
+            msgDiv.className = msg.role; // optional: apply .user/.bot styling
+            msgDiv.innerHTML = `${msg.role === "user" ? "🧑" : "🤖"} ${msg.content}`;
+            historyList.appendChild(msgDiv);
+        });
+    });
+}
+
+historyBtn.addEventListener("click", loadHistorySidebar);

@@ -48,6 +48,36 @@ body::before {
 @keyframes ambientMove {
     50% { transform: translate(80px,-60px); }
 }
+.main-container {
+    display: flex;
+    gap: 20px;
+    width: 90vw;
+    max-width: 1400px;
+    min-width: 520px;
+    height: 88vh;
+}
+
+.history-sidebar {
+    width: 280px;
+    background: rgba(23,26,33,0.9);
+    border-radius: 18px;
+    padding: 16px;
+    overflow-y: auto;
+    color: var(--text);
+}
+
+.history-sidebar h3 {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+#history-list div {
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    background: rgba(76,175,80,0.15); /* bot messages default color */
+    font-size: 14px;
+}
 
 /* =========================
    CHAT CONTAINER
