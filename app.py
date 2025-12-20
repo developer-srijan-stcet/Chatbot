@@ -1,22 +1,20 @@
 from flask import Flask, render_template, request, jsonify
-import google.genai as genai
+import google.generativeai as genai  # Corrected import for official Google Generative AI library
 import os
 import psycopg
 from psycopg.rows import dict_row
-
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
 
 # ---------- Gemini AI ----------
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))  # Configure API key globally
 
 # ---------- Database ----------
 DB_URL = os.getenv("DATABASE_URL")
 
 def get_conn():
     return psycopg.connect(DB_URL, row_factory=dict_row)
-
 
 # ---------- Initialize DB safely ----------
 def init_db():
@@ -60,13 +58,10 @@ def chat():
                 )
             conn.commit()
 
-        # Generate AI reply using new google-genai syntax
-        response = client.responses.create(
-            model="gemini-2.5-flash",
-            input=user_msg
-        )
-        # Get the text output
-        reply_text = response.output[0].content[0].text
+        # Generate AI reply using correct Gemini API
+        model = genai.GenerativeModel('gemini-1.5-flash')  # Valid model name; change if needed
+        response = model.generate_content(user_msg)
+        reply_text = response.text  # Extract the text response
 
         # Save AI reply
         with get_conn() as conn:
@@ -82,8 +77,6 @@ def chat():
     except Exception as e:
         print("Error in /chat:", e)
         return jsonify({"reply": "Oops! Something went wrong."})
-
-
 
 @app.route("/clear-history", methods=["POST"])
 def clear_history():
