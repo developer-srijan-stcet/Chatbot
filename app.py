@@ -47,18 +47,24 @@ def chat():
     user_msg = request.json.get("message")
     user_id = session["user_id"]
 
-    # Save ONLY user message
-    with get_conn() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                "INSERT INTO messages (user_id, content) VALUES (%s,%s)",
-                (user_id, user_msg)
-            )
-        conn.commit()
+    try:
+        # Save user message
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "INSERT INTO messages (user_id, content) VALUES (%s,%s)",
+                    (user_id, user_msg)
+                )
+            conn.commit()
 
-    # Generate reply (not saved)
-    reply = model.generate_content(user_msg).text
-    return jsonify({"reply": reply})
+        # Generate AI reply
+        reply = model.generate_content(user_msg).text
+        return jsonify({"reply": reply})
+
+    except Exception as e:
+        print("Error in /chat:", e)  # Logs error to console/Render logs
+        return jsonify({"reply": "Oops! Something went wrong."})
+
 
 @app.route("/history")
 def history():
