@@ -4,41 +4,60 @@
     <meta charset="UTF-8">
     <title>Chanakya – Your AI Learning Mentor</title>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="{{ url_for('static', filename='download.ico') }}"
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='download.ico') }}">
+
     <!-- Main CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
-<div class="page-bg">
 
+<div class="page-bg">
     <div class="chat-container">
 
         <!-- ===== HEADER ===== -->
         <div class="chat-header">
-            <span class="title">Chanakya</span>
+            <span class="title">CHANAKYA</span>
             <span class="subtitle">THE AI MENTOR</span>
         </div>
 
         <!-- ===== CHAT AREA ===== -->
         <div id="chat-box">
+
+            <!-- Initial welcome message (optional but premium) -->
+            <div class="bot">
+                👋 Welcome. I am <strong>Chanakya</strong>. Ask me anything.
+            </div>
+
+            <!-- Typing indicator -->
             <div id="typing-indicator" class="typing hidden">
                 <span></span><span></span><span></span>
             </div>
+
         </div>
 
         <!-- ===== INPUT ===== -->
         <div class="input-area">
-            <input type="text" id="user-input" placeholder="Ask Chanakya for wisdom..." />
+            <input
+                type="text"
+                id="user-input"
+                placeholder="Ask Chanakya for wisdom…"
+                autocomplete="off"
+            />
             <button id="send-btn">Send</button>
         </div>
 
     </div>
-
 </div>
 
+<!-- Main JS -->
 <script src="{{ url_for('static', filename='script.js') }}"></script>
+
 </body>
 </html>

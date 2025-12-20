@@ -1,52 +1,43 @@
 const chatBox = document.getElementById("chat-box");
 const input = document.getElementById("user-input");
-const sendBtn = document.getElementById("send-btn");
-const typing = document.getElementById("typing-indicator");
-
-sendBtn.addEventListener("click", sendMessage);
-input.addEventListener("keydown", e => {
-    if (e.key === "Enter") sendMessage();
-});
 
 function sendMessage() {
-    const message = input.value.trim();
-    if (!message) return;
+    const text = input.value.trim();
+    if (!text) return;
 
-    addMessage(message, "user");
+    addMessage(text, "user");
     input.value = "";
+
     showTyping();
 
-    fetch("/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message })
-    })
-    .then(res => res.json())
-    .then(data => {
-        hideTyping();
-        addMessage(data.reply, "bot");
-        if (window.MathJax) MathJax.typeset();
-    })
-    .catch(() => {
-        hideTyping();
-        addMessage("⚠️ Chanakya is reflecting. Please try again.", "bot");
-    });
+    setTimeout(() => {
+        removeTyping();
+        addMessage("This is a premium demo reply ✨", "bot");
+    }, 1200);
 }
 
 function addMessage(text, type) {
     const msg = document.createElement("div");
     msg.className = type;
     msg.textContent = text;
-
-    chatBox.insertBefore(msg, typing);
+    chatBox.appendChild(msg);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 function showTyping() {
-    typing.classList.remove("hidden");
+    const typing = document.createElement("div");
+    typing.className = "bot typing";
+    typing.id = "typing";
+    typing.innerHTML = "<span></span><span></span><span></span>";
+    chatBox.appendChild(typing);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-function hideTyping() {
-    typing.classList.add("hidden");
+function removeTyping() {
+    const t = document.getElementById("typing");
+    if (t) t.remove();
 }
+
+input.addEventListener("keypress", e => {
+    if (e.key === "Enter") sendMessage();
+});
