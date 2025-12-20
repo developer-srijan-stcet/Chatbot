@@ -59,7 +59,7 @@ def chat():
             conn.commit()
 
         # Generate AI reply using correct Gemini API
-        model = genai.GenerativeModel('gemini-1.5-flash')  # Valid model name; change if needed
+        model = genai.GenerativeModel('gemini-2.5-flash')  # Valid model name; change if needed
         response = model.generate_content(user_msg)
         reply_text = response.text  # Extract the text response
 
