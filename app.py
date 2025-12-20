@@ -68,17 +68,24 @@ def chat():
 
 @app.route("/history")
 def history():
-    user_id = session["user_id"]
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify([])  # fallback if session missing
 
-    with get_conn() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                "SELECT content FROM messages WHERE user_id=%s ORDER BY timestamp DESC",
-                (user_id,)
-            )
-            msgs = cur.fetchall()
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT content FROM messages WHERE user_id=%s ORDER BY timestamp DESC",
+                    (user_id,)
+                )
+                msgs = cur.fetchall()
+        return jsonify(msgs)
 
-    return jsonify(msgs)
+    except Exception as e:
+        print("Error in /history:", e)
+        return jsonify([])  # return empty list instead of HTML error page
+
 
 if __name__ == "__main__":
     app.run(debug=True)
