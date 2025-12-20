@@ -1,36 +1,13 @@
 const chatBox = document.getElementById("chat-box");
 const input = document.getElementById("user-input");
+const sendBtn = document.getElementById("send-btn");
 const historyBtn = document.getElementById("history-btn");
 const historyList = document.getElementById("history-list");
 
-function sendMessage() {
-    const text = input.value.trim();
-    if (!text) return;
-
-    addMessage(text, "user");
-    input.value = "";
-    showTyping();
-
-    fetch("/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text })
-    })
-    .then(res => res.json())
-    .then(data => {
-        removeTyping();
-        addMessage(data.reply, "bot");
-    })
-    .catch(err => {
-        removeTyping();
-        addMessage("Oops! Something went wrong.", "bot");
-        console.error(err);
-    });
-}
-
+// ---------- Chat functions ----------
 function addMessage(text, type) {
     const msg = document.createElement("div");
-    msg.className = type;
+    msg.className = type; // 'user' or 'bot'
     msg.innerHTML = text.replace(/\n/g, "<br>");
     chatBox.appendChild(msg);
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -50,22 +27,49 @@ function removeTyping() {
     if (t) t.remove();
 }
 
-input.addEventListener("keypress", e => { if (e.key === "Enter") sendMessage(); });
-document.getElementById("send-btn").addEventListener("click", sendMessage);
+function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
 
-// ------------------- HISTORY -------------------
+    addMessage(text, "user");
+    input.value = "";
+    showTyping();
+
+    fetch("/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ message: text })
+    })
+    .then(res => res.json())
+    .then(data => {
+        removeTyping();
+        addMessage(data.reply, "bot");
+    })
+    .catch(err => {
+        removeTyping();
+        addMessage("Oops! Something went wrong.", "bot");
+        console.error(err);
+    });
+}
+
+// ---------- Sidebar history ----------
 function loadHistorySidebar() {
     fetch("/history")
     .then(res => res.json())
     .then(data => {
         historyList.innerHTML = "";
         data.forEach(msg => {
-            const msgDiv = document.createElement("div");
-            msgDiv.className = msg.role; // optional: apply .user/.bot styling
-            msgDiv.innerHTML = `${msg.role === "user" ? "🧑" : "🤖"} ${msg.content}`;
-            historyList.appendChild(msgDiv);
+            const div = document.createElement("div");
+            div.className = "history-item"; // simple styling class
+            div.textContent = `🧑 ${msg.content}`; // Only user messages
+            historyList.appendChild(div);
         });
     });
 }
 
+// ---------- Event listeners ----------
+input.addEventListener("keypress", e => {
+    if (e.key === "Enter") sendMessage();
+});
+sendBtn.addEventListener("click", sendMessage);
 historyBtn.addEventListener("click", loadHistorySidebar);

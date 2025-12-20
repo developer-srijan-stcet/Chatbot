@@ -1,76 +1,78 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 import google.generativeai as genai
 import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from datetime import datetime
+import uuid
 
 app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
 
-# Load Gemini API key
-API_KEY = os.getenv("GEMINI_API_KEY")
-if not API_KEY:
-    raise ValueError("GEMINI_API_KEY not set in environment variables")
-genai.configure(api_key=API_KEY)
+# ========== GEMINI ==========
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel("gemini-2.5-flash")
 
-# PostgreSQL connection
+# ========== DATABASE ==========
 DB_URL = os.getenv("DATABASE_URL")
-if not DB_URL:
-    raise ValueError("DATABASE_URL not set in environment variables")
 
 def get_conn():
     return psycopg2.connect(DB_URL, cursor_factory=RealDictCursor)
 
-# Create table if not exists
+# ========== CREATE TABLE ==========
 with get_conn() as conn:
     with conn.cursor() as cur:
         cur.execute("""
-        CREATE TABLE IF NOT EXISTS messages (
-            id SERIAL PRIMARY KEY,
-            role VARCHAR(10),
-            content TEXT,
-            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
+            CREATE TABLE IF NOT EXISTS messages (
+                id SERIAL PRIMARY KEY,
+                user_id TEXT,
+                content TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
         """)
     conn.commit()
 
+# ========== SESSION USER ==========
+@app.before_request
+def ensure_user():
+    if "user_id" not in session:
+        session["user_id"] = str(uuid.uuid4())
+
+# ========== ROUTES ==========
 @app.route("/")
 def home():
     return render_template("index.html")
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    user_message = request.json.get("message")
+    user_msg = request.json.get("message")
+    user_id = session["user_id"]
 
-    try:
-        # Save user message
-        with get_conn() as conn:
-            with conn.cursor() as cur:
-                cur.execute("INSERT INTO messages (role, content) VALUES (%s,%s)", ("user", user_message))
-            conn.commit()
-
-        # Generate bot response
-        response = model.generate_content(user_message)
-        bot_reply = response.text
-
-        # Save bot reply
-        with get_conn() as conn:
-            with conn.cursor() as cur:
-                cur.execute("INSERT INTO messages (role, content) VALUES (%s,%s)", ("bot", bot_reply))
-            conn.commit()
-
-        return jsonify({"reply": bot_reply})
-    except Exception as e:
-        return jsonify({"reply": f"Error: {str(e)}"})
-
-@app.route("/history", methods=["GET"])
-def history():
+    # Save ONLY user message
     with get_conn() as conn:
         with conn.cursor() as cur:
-            cur.execute("SELECT role, content, timestamp FROM messages ORDER BY timestamp")
-            messages = cur.fetchall()
-    return jsonify(messages)
+            cur.execute(
+                "INSERT INTO messages (user_id, content) VALUES (%s,%s)",
+                (user_id, user_msg)
+            )
+        conn.commit()
+
+    # Generate reply (not saved)
+    reply = model.generate_content(user_msg).text
+    return jsonify({"reply": reply})
+
+@app.route("/history")
+def history():
+    user_id = session["user_id"]
+
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT content FROM messages WHERE user_id=%s ORDER BY timestamp DESC",
+                (user_id,)
+            )
+            msgs = cur.fetchall()
+
+    return jsonify(msgs)
 
 if __name__ == "__main__":
     app.run(debug=True)

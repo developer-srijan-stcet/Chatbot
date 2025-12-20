@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Chanakya – Your AI Learning Mentor</title>
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Google Font -->
@@ -15,19 +14,17 @@
     <!-- Main CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
-
 <div class="page-bg">
     <div class="main-container">
 
-        <!-- Sidebar -->
+        <!-- Sidebar for user history -->
         <div class="history-sidebar" id="history-sidebar">
             <h3>Chat History</h3>
             <div id="history-list"></div>
         </div>
 
-        <!-- Main chat -->
+        <!-- Main chat area -->
         <div class="chat-container">
             <div class="chat-header">
                 <span class="title">CHANAKYA</span>
@@ -47,9 +44,7 @@
     </div>
 </div>
 
-
-<!-- Main JS -->
+<!-- JS -->
 <script src="{{ url_for('static', filename='script.js') }}"></script>
-
 </body>
 </html>
