@@ -72,8 +72,8 @@ async function loadHistorySidebar() {
         historyList.innerHTML = "";
         data.forEach(msg => {
             const div = document.createElement("div");
-            div.className = "history-item";
-            div.textContent = `🧑 ${msg.content}`;
+            div.className = msg.msg_type === "user" ? "history-item user" : "history-item bot";
+            div.textContent = (msg.msg_type === "user" ? "🧑 " : "🤖 ") + msg.content;
             historyList.appendChild(div);
         });
     } catch (err) {
@@ -98,7 +98,7 @@ historyBtn.addEventListener("click", () => {
     }
 });
 
-// Custom Cursor
+// ---------- Custom cursor ----------
 const cursor = document.createElement('div');
 cursor.className = 'cursor';
 document.body.appendChild(cursor);
@@ -116,7 +116,7 @@ async function loadChatHistory() {
             body: JSON.stringify({ user_id: userId })
         });
         const data = await res.json();
-        data.forEach(msg => addMessage(msg.content, "bot"));
+        data.forEach(msg => addMessage(msg.content, msg.msg_type));
     } catch (err) {
         console.error(err);
     }
