@@ -82,9 +82,7 @@ async function loadHistorySidebar() {
 }
 
 // ---------- Event listeners ----------
-input.addEventListener("keypress", e => {
-    if (e.key === "Enter") sendMessage();
-});
+input.addEventListener("keypress", e => { if (e.key === "Enter") sendMessage(); });
 sendBtn.addEventListener("click", sendMessage);
 historyBtn.addEventListener("click", () => {
     const isVisible = historySidebar.classList.contains("visible");
