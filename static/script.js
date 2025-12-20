@@ -4,6 +4,7 @@ const sendBtn = document.getElementById("send-btn");
 const historyBtn = document.getElementById("history-btn");
 const historyList = document.getElementById("history-list");
 const historySidebar = document.getElementById("history-sidebar");
+const mainContainer = document.querySelector(".main-container");
 
 // ---------- Chat functions ----------
 function addMessage(text, type) {
@@ -74,10 +75,13 @@ input.addEventListener("keypress", e => {
 });
 sendBtn.addEventListener("click", sendMessage);
 historyBtn.addEventListener("click", () => {
-    if (historySidebar.classList.contains("visible")) {
+    const isVisible = historySidebar.classList.contains("visible");
+    if (isVisible) {
         historySidebar.classList.remove("visible");
+        mainContainer.classList.remove("sidebar-open");
     } else {
         historySidebar.classList.add("visible");
+        mainContainer.classList.add("sidebar-open");
         loadHistorySidebar();
     }
 });
