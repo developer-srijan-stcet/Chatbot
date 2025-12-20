@@ -1,12 +1,10 @@
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify
 import google.generativeai as genai
 import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
-import uuid
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
 
 # ========== GEMINI ==========
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
@@ -26,16 +24,11 @@ with get_conn() as conn:
                 id SERIAL PRIMARY KEY,
                 user_id TEXT,
                 content TEXT,
+                msg_type TEXT DEFAULT 'user',
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
     conn.commit()
-
-# ========== SESSION USER ==========
-@app.before_request
-def ensure_user():
-    if "user_id" not in session:
-        session["user_id"] = str(uuid.uuid4())
 
 # ========== ROUTES ==========
 @app.route("/")
@@ -44,47 +37,62 @@ def home():
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    user_msg = request.json.get("message")
-    user_id = session["user_id"]
+    data = request.json
+    user_msg = data.get("message")
+    user_id = data.get("user_id")  # <- get from frontend JSON
+
+    if not user_id or not user_msg:
+        return jsonify({"reply": "Invalid request."})
 
     try:
         # Save user message
         with get_conn() as conn:
             with conn.cursor() as cur:
                 cur.execute(
-                    "INSERT INTO messages (user_id, content) VALUES (%s,%s)",
-                    (user_id, user_msg)
+                    "INSERT INTO messages (user_id, content, msg_type) VALUES (%s, %s, %s)",
+                    (user_id, user_msg, "user")
                 )
             conn.commit()
 
         # Generate AI reply
-        reply = model.generate_content(user_msg).text
-        return jsonify({"reply": reply})
+        reply_text = model.generate_content(user_msg).text
+
+        # Save AI reply
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "INSERT INTO messages (user_id, content, msg_type) VALUES (%s, %s, %s)",
+                    (user_id, reply_text, "bot")
+                )
+            conn.commit()
+
+        return jsonify({"reply": reply_text})
 
     except Exception as e:
-        print("Error in /chat:", e)  # Logs error to console/Render logs
+        print("Error in /chat:", e)
         return jsonify({"reply": "Oops! Something went wrong."})
 
-
-@app.route("/history")
+@app.route("/history", methods=["POST"])
 def history():
-    user_id = session.get("user_id")
+    data = request.json
+    user_id = data.get("user_id")  # <- get from frontend JSON
+
     if not user_id:
-        return jsonify([])  # fallback if session missing
+        return jsonify([])
 
     try:
         with get_conn() as conn:
             with conn.cursor() as cur:
                 cur.execute(
-                    "SELECT content FROM messages WHERE user_id=%s ORDER BY timestamp DESC",
+                    "SELECT content, msg_type FROM messages WHERE user_id=%s ORDER BY timestamp ASC",
                     (user_id,)
                 )
                 msgs = cur.fetchall()
         return jsonify(msgs)
-
     except Exception as e:
         print("Error in /history:", e)
-        return jsonify([])  # return empty list instead of HTML error page
+        return jsonify([])
+
 
 
 if __name__ == "__main__":
