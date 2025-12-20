@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, jsonify
 import google.genai as genai
 import os
-import psycopg2
-from psycopg2.extras import RealDictCursor
+import psycopg
+from psycopg.rows import dict_row
+
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
@@ -14,7 +15,8 @@ client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 DB_URL = os.getenv("DATABASE_URL")
 
 def get_conn():
-    return psycopg2.connect(DB_URL, cursor_factory=RealDictCursor)
+    return psycopg.connect(DB_URL, row_factory=dict_row)
+
 
 # ---------- Initialize DB safely ----------
 def init_db():
