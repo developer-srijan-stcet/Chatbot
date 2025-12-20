@@ -32,10 +32,17 @@ function sendMessage() {
 function addMessage(text, type) {
     const msg = document.createElement("div");
     msg.className = type;
-    msg.textContent = text;
+
+    // Convert line breaks to <br> for proper formatting
+    const formattedText = text.replace(/\n/g, "<br>");
+
+    // Render HTML content (bold, italics) safely
+    msg.innerHTML = formattedText;
+
     chatBox.appendChild(msg);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
+
 
 function showTyping() {
     const typing = document.createElement("div");
