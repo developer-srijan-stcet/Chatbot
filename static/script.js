@@ -16,10 +16,19 @@ localStorage.setItem("user_id", userId);
 function addMessage(text, type){
     const msg = document.createElement("div");
     msg.className = type;
-    msg.innerHTML = text.replace(/\n/g,"<br>");
+
+    // Parse Markdown
+    msg.innerHTML = marked.parse(text);
+
     chatBox.appendChild(msg);
     chatBox.scrollTop = chatBox.scrollHeight;
+
+    // Render Math if present
+    if (window.MathJax) {
+        MathJax.typesetPromise([msg]);
+    }
 }
+
 
 function showTyping(){
     const t = document.createElement("div");
