@@ -1,3 +1,6 @@
+#Jai Shree Shyma [Hare Ka sahara, Baba Shyma Hamara]
+#Jai Hanuman
+#"Vasudeva Sutam Devam Kamsa-Chanura Mardanam, Devaki Paramanandam Krishnam Vande Jagadgurum" (वासुदेवसुतं देवं कंसचाणूरमर्दनम्। देवकीपरमानन्दं कृष्णं वन्दे जगद्गुरुम्॥)
 from flask import Flask, render_template, request, jsonify
 import google.generativeai as genai  # Corrected import for official Google Generative AI library
 import os
